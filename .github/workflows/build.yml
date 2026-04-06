@@ -27,7 +27,7 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
       with:
-        api-level: 34
+        packages: 'platforms;android-34 build-tools;34.0.0 platform-tools'
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
@@ -35,10 +35,16 @@ jobs:
     - name: Build APK
       run: ./gradlew assembleRelease
 
+    - name: Check APK exists
+      run: ls -la app/build/outputs/apk/release/app-release.apk || (echo "APK not found, build failed" && exit 1)
+
+    - name: Rename APK
+      run: cp app/build/outputs/apk/release/app-release.apk apk-tv.apk
+
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: v${{ github.event.inputs.version }}
         name: Release v${{ github.event.inputs.version }}
-        files: app/build/outputs/apk/release/app-release.apk
+        files: apk-tv.apk
         generate_release_notes: true
