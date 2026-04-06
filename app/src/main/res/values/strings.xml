@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">APK TV</string>
+    <string name="browse_title">Canales</string>
+    <string name="error">Error</string>
+</resources>
