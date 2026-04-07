@@ -12,6 +12,14 @@
         android:name="android.hardware.touchscreen"
         android:required="false" />
 
+    <queries>
+        <package android:name="org.acestream.media" />
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="acestream" />
+        </intent>
+    </queries>
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"

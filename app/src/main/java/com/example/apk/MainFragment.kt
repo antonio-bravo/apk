@@ -3,6 +3,7 @@ package com.example.apk
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
 import androidx.lifecycle.ViewModelProvider
@@ -48,8 +49,25 @@ class MainFragment : BrowseSupportFragment(), OnItemViewClickedListener {
         row: Row?
     ) {
         if (item is Channel) {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.url))
-            startActivity(intent)
+            try {
+                // Configurar el Intent para abrir específicamente con Acestream
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    setDataAndType(Uri.parse(item.url), "application/x-mpegurl")
+                    // Intentamos forzar que lo abra el motor de Acestream si está instalado
+                    `package` = "org.acestream.media" 
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                
+                // Si falla con el paquete específico, probamos el genérico para que el sistema pregunte
+                if (intent.resolveActivity(requireContext().packageManager) != null) {
+                    startActivity(intent)
+                } else {
+                    val genericIntent = Intent(Intent.ACTION_VIEW, Uri.parse(item.url))
+                    startActivity(genericIntent)
+                }
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Error al abrir Acestream: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
